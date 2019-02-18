@@ -1,1 +1,1 @@
-include ':app', ':java8'
+include ':app', ':java8', ':spannable'
