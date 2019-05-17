@@ -13,6 +13,20 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".CountryListActivity"
+                android:label="@string/title_country_list"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".CountryDetailActivity"
+                android:label="@string/title_country_detail"
+                android:parentActivityName=".CountryListActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.lmplayground.CountryListActivity"/>
+        </activity>
+        <activity
                 android:name=".TabbedActivity"
                 android:label="@string/title_activity_tabbed"
                 android:theme="@style/AppTheme.NoActionBar">
