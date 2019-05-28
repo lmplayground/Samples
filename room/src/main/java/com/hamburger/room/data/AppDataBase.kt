@@ -45,10 +45,14 @@ abstract class AppDatabase : RoomDatabase() {
                         Log.d(TAG,"onCreate")
                         runOnIoThread {
                             context.resources.openRawResource(R.raw.emojis).use {
+                                val inputStreamReader = InputStreamReader(it)
                                 val gson = Gson()
-                                val items = gson.fromJson<ArrayList<Emoji>>(InputStreamReader(it),listType)
-                                //insert data
-                                instance?.emojiDao()?.insertAll(items)
+                                val list = gson.fromJson<List<Emoji>>(inputStreamReader, listType)
+
+                                list.forEach { emoji->
+                                    instance?.emojiDao()?.insert(emoji)
+                                    SystemClock.sleep(100)
+                                }
                             }
                         }
                     }

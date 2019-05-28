@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.EditText
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
@@ -32,46 +33,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener {
-            val editText = EditText(this)
-//            editText.inputType = InputType.TYPE_CLASS_TEXT
-            AlertDialog.Builder(this)
-                .setTitle("Search Emoji")
-                .setView(editText)
-                .setNegativeButton("Cancel") { _, _ ->}
-                .setPositiveButton("Search") { _, _ ->
-                    val input = editText.text.toString()
-                    runOnIoThread {
-                        val items = AppDatabase.getInstance(this).emojiDao().getItemsByNameSearch("%$input%")
-                        Log.d(TAG, "search results $items")
-                        adapter = EmojiAdapter(this.layoutInflater, items)
-                        recyclerView.post { recyclerView.swapAdapter(adapter, true) }
-                    }
-                }
-                .show()
-        }
-
         recyclerView = findViewById(R.id.main_recycler_view)
         recyclerView.layoutManager = GridLayoutManager(this,8)
-//        recyclerView.layoutManager = StaggeredGridLayoutManager(8,RecyclerView.VERTICAL)
 
-        AppDatabase.getInstance(this).emojiDao().streamAllItems().observe(this, Observer {
-            Log.d(TAG,"on items changed ${it.size}")
-            if (adapter != null) {
-                   adapter?.data = it
-                adapter?.notifyDataSetChanged()
-            }else {
-                adapter = EmojiAdapter(this.layoutInflater, it)
-                recyclerView.swapAdapter(adapter, true)
+            AppDatabase.getInstance(this).emojiDao().streamAllItems().observe(this, Observer {list->
+                val emojiAdapter = EmojiAdapter(this.layoutInflater, list)
+                if (adapter != null) {
+                    recyclerView.swapAdapter(emojiAdapter,true)
+                }else
+                    recyclerView.adapter = emojiAdapter
+                adapter = emojiAdapter
+                recyclerView.post { adapter?.notifyDataSetChanged() }
+            })
+
+
+            fab.setOnClickListener {
+                val editText = EditText(this)
+                AlertDialog.Builder(this)
+                    .setTitle("Search Emojis")
+                    .setView(editText)
+                    .setPositiveButton("Search") { dialog, which ->
+                        val text = editText.text.toString()
+                        runOnIoThread {
+                            val list =
+                                AppDatabase.getInstance(this).emojiDao().getItemsByNameSearch("%$text%")
+
+                            val emojiAdapter = EmojiAdapter(this.layoutInflater, list)
+                            adapter = emojiAdapter
+
+                            recyclerView.post { recyclerView.swapAdapter(adapter,true) }
+                        }
+                    }.show()
             }
-        })
-//        AppExecutors.networkIO.execute {
-//            val allItems = AppDatabase.getInstance(this).emojiDao().getAllItems()
-//            Log.d(TAG,"all items are ${allItems.size}")
-//            val adapter = EmojiAdapter(this.layoutInflater,allItems)
-//            recyclerView.post { recyclerView.adapter = adapter }
-//        }
-
 
 
     }
