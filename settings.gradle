@@ -1,1 +1,1 @@
-include ':app', ':java8', ':spannable', ':lmbase'
+include ':app', ':java8', ':spannable', ':lmbase', ':room'
