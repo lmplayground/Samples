@@ -51,7 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                                 list.forEach { emoji->
                                     instance?.emojiDao()?.insert(emoji)
-                                    SystemClock.sleep(100)
+                                    SystemClock.sleep(1)
                                 }
                             }
                         }
