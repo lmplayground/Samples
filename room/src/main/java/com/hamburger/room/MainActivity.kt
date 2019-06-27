@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
     private lateinit var recyclerView : RecyclerView
-    private var adapter: EmojiAdapter? = null
+    private var adapter = EmojiAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.main_recycler_view)
         recyclerView.layoutManager = GridLayoutManager(this,8)
-        recyclerView.adapter = EmojiAdapter(this.layoutInflater).also { adapter = it }
+        recyclerView.adapter = adapter
 
             AppDatabase.getInstance(this).emojiDao().streamAllItems().observe(this, Observer {list->
-                adapter?.submitList(list)
+                adapter.submitList(list)
             })
 
 
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                             val list =
                                 AppDatabase.getInstance(this).emojiDao().getItemsByNameSearch("%$text%")
 
-                             adapter?.submitList(list)
+                             adapter.submitList(list)
                         }
                     }.show()
             }

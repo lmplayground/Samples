@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hamburger.room.data.Emoji
 
-class EmojiAdapter(val inflater: LayoutInflater): ListAdapter<Emoji,EmojiAdapter.EmojiHolder>(DIFFUTIL_CALLBACK) {
+class EmojiAdapter(): ListAdapter<Emoji,EmojiAdapter.EmojiHolder>(DIFFUTIL_CALLBACK) {
 
     companion object{
         val DIFFUTIL_CALLBACK = object : DiffUtil.ItemCallback<Emoji>() {
@@ -24,7 +24,7 @@ class EmojiAdapter(val inflater: LayoutInflater): ListAdapter<Emoji,EmojiAdapter
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiHolder {
-        inflater.inflate(android.R.layout.simple_gallery_item,parent,false).run {
+        LayoutInflater.from(parent.context).inflate(android.R.layout.simple_gallery_item,parent,false).run {
             return EmojiHolder(this)
         }
 
