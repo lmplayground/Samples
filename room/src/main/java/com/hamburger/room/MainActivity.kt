@@ -25,8 +25,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     val TAG = "MainActivity"
-    lateinit var recyclerView : RecyclerView
-    var adapter: EmojiAdapter? = null
+    private lateinit var recyclerView : RecyclerView
+    private var adapter = EmojiAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,15 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.main_recycler_view)
         recyclerView.layoutManager = GridLayoutManager(this,8)
+        recyclerView.adapter = adapter
 
             AppDatabase.getInstance(this).emojiDao().streamAllItems().observe(this, Observer {list->
-                val emojiAdapter = EmojiAdapter(this.layoutInflater, list)
-                if (adapter != null) {
-                    recyclerView.swapAdapter(emojiAdapter,true)
-                }else
-                    recyclerView.adapter = emojiAdapter
-                adapter = emojiAdapter
-                recyclerView.post { adapter?.notifyDataSetChanged() }
+                adapter.submitList(list)
             })
 
 
@@ -52,16 +47,13 @@ class MainActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                     .setTitle("Search Emojis")
                     .setView(editText)
-                    .setPositiveButton("Search") { dialog, which ->
+                    .setPositiveButton("Search") { _, _ ->
                         val text = editText.text.toString()
                         runOnIoThread {
                             val list =
                                 AppDatabase.getInstance(this).emojiDao().getItemsByNameSearch("%$text%")
 
-                            val emojiAdapter = EmojiAdapter(this.layoutInflater, list)
-                            adapter = emojiAdapter
-
-                            recyclerView.post { recyclerView.swapAdapter(adapter,true) }
+                             adapter.submitList(list)
                         }
                     }.show()
             }

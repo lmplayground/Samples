@@ -4,21 +4,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hamburger.room.data.Emoji
 
-class EmojiAdapter(val inflater: LayoutInflater,var data: List<Emoji>): RecyclerView.Adapter<EmojiAdapter.EmojiHolder>() {
+class EmojiAdapter(): ListAdapter<Emoji,EmojiAdapter.EmojiHolder>(DIFFUTIL_CALLBACK) {
+
+    companion object{
+        val DIFFUTIL_CALLBACK = object : DiffUtil.ItemCallback<Emoji>() {
+            override fun areItemsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Emoji, newItem: Emoji): Boolean {
+                return oldItem.emoji==newItem.emoji
+            }
+
+        }
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiHolder {
-        inflater.inflate(android.R.layout.simple_gallery_item,parent,false).run {
+        LayoutInflater.from(parent.context).inflate(android.R.layout.simple_gallery_item,parent,false).run {
             return EmojiHolder(this)
         }
 
     }
 
-    override fun getItemCount(): Int = data.size
 
     override fun onBindViewHolder(holder: EmojiHolder, position: Int) {
-        holder.setIEmoji(data[position])
+        holder.setIEmoji(getItem(position))
     }
 
     class EmojiHolder(view: View):RecyclerView.ViewHolder(view){
